@@ -1,0 +1,65 @@
+{% extends "emotional_app/base.html" %}
+
+{% block title %}Регистрация — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+    <div class="auth-page__shade"></div>
+
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <div class="auth-card__badge">EmoFlow</div>
+
+            <h1 class="auth-card__title">Создание аккаунта</h1>
+
+            <p class="auth-card__text">
+                Зарегистрируйтесь, чтобы начать 21-дневную программу развития
+                эмоциональной саморегуляции.
+            </p>
+        </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="form-help">
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="form-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="auth-submit">
+                Создать аккаунт
+            </button>
+        </form>
+
+        <div class="auth-card__footer">
+            Уже есть аккаунт?
+            <a href="{% url 'login' %}">Войти</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

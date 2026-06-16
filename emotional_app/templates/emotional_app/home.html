@@ -1,0 +1,47 @@
+{% extends "emotional_app/base.html" %}
+
+{% block title %}EmoFlow — эмоциональная саморегуляция{% endblock %}
+
+{% block content %}
+
+<section class="home-hero">
+    <div class="home-hero__shade"></div>
+
+    <div class="home-hero__content">
+        <div class="home-hero__badge">
+            EmoFlow
+        </div>
+
+        <h1 class="home-hero__title">
+            21 день развития<br>
+            эмоциональной саморегуляции
+        </h1>
+
+        <p class="home-hero__text">
+            Веб-приложение направлено на развитие навыков продуктивной
+            психологической переработки негативных эмоциональных состояний.
+        </p>
+
+        <div class="home-hero__actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="home-btn home-btn--primary">
+                    Продолжить программу
+                </a>
+
+                <a href="{% url 'progress' %}" class="home-btn home-btn--secondary">
+                    Посмотреть прогресс
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="home-btn home-btn--primary">
+                    Начать программу
+                </a>
+
+                <a href="{% url 'login' %}" class="home-btn home-btn--secondary">
+                    Войти в аккаунт
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

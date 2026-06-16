@@ -1,0 +1,129 @@
+{% extends 'emotional_app/base.html' %}
+
+{% block title %}День {{ day.number }} — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="day-page">
+    <div class="day-bg"></div>
+
+    <div class="day-container">
+
+        <div class="day-top-panel">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← К программе
+            </a>
+
+            <div class="day-chip">
+                День {{ day.number }}
+            </div>
+        </div>
+
+        <div class="day-hero-card">
+            <div class="day-hero-card__content">
+                <div class="day-badge">
+                    Практика дня
+                </div>
+
+                <h1 class="day-title">
+                    {{ day.title }}
+                </h1>
+
+                <div class="day-intro">
+                    {% if day.intro_text %}
+                        {{ day.intro_text|linebreaksbr }}
+                    {% elif day.intro %}
+                        {{ day.intro|linebreaksbr }}
+                    {% else %}
+                        Сегодняшний день состоит из нескольких упражнений. Проходите их последовательно и сохраняйте свои ответы.
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="day-side-card">
+                <div class="day-side-card__icon">✦</div>
+
+                <h3>Мягкий темп</h3>
+
+                <p>
+                    Выполняйте упражнения спокойно. Вы можете вернуться к этому дню позже
+                    и пересмотреть свои ответы.
+                </p>
+            </div>
+        </div>
+
+        <div class="day-section-header">
+            <div>
+                <h2>Упражнения дня</h2>
+                <p>
+                    Открывайте упражнения по порядку и заполняйте обязательные поля,
+                    чтобы завершить день.
+                </p>
+            </div>
+        </div>
+
+        <div class="exercise-list">
+            {% for exercise in exercises %}
+                <article class="exercise-card">
+                    <div class="exercise-card__number">
+                        {{ forloop.counter }}
+                    </div>
+
+                    <div class="exercise-card__content">
+                        <div class="exercise-card__label">
+                            Упражнение {{ forloop.counter }}
+                        </div>
+
+                        <h3>
+                            {{ exercise.title }}
+                        </h3>
+
+                        {% if exercise.description %}
+                            <p>
+                                {{ exercise.description|truncatechars:170 }}
+                            </p>
+                        {% else %}
+                            <p>
+                                Откройте упражнение, прочитайте инструкцию и заполните предложенные поля.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="exercise-card__action">
+                        <a href="{% url 'exercise_detail' exercise.id %}" class="exercise-open-btn">
+                            Открыть
+                        </a>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-day-card">
+                    <div class="empty-day-card__icon">○</div>
+
+                    <h3>Упражнения пока не добавлены</h3>
+
+                    <p>
+                        Для этого дня пока нет упражнений. Проверьте заполнение программы через команду seed_program.
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if is_completed %}
+            <div class="day-completed-card">
+                <div class="day-completed-card__icon">★</div>
+
+                <div>
+                    <h3>Этот день завершен</h3>
+
+                    <p>
+                        Вы можете вернуться к упражнениям, перечитать материалы и изменить ответы,
+                        если захотите.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

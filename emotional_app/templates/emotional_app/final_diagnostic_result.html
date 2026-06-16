@@ -1,0 +1,134 @@
+{% extends 'emotional_app/base.html' %}
+
+{% block title %}Результат итоговой диагностики — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="diagnostic-page">
+    <div class="diagnostic-bg"></div>
+
+    <div class="diagnostic-container">
+
+        <div class="diagnostic-top-panel">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← К программе
+            </a>
+
+            <div class="diagnostic-chip">
+                Результат диагностики
+            </div>
+        </div>
+
+        <div class="diagnostic-hero final-result-hero">
+            <div class="diagnostic-hero__content">
+                <div class="diagnostic-badge">
+                    Итоги прохождения
+                </div>
+
+                <h1>
+                    Ваш результат
+                </h1>
+
+                <p>
+                    Ниже представлен общий вывод по итоговой диагностике. Он помогает увидеть,
+                    как сформированы навыки продуктивной психологической переработки негативных
+                    эмоциональных состояний.
+                </p>
+            </div>
+
+            <div class="diagnostic-side-card">
+                <div class="diagnostic-side-card__icon">📌</div>
+
+                <h3>Важно</h3>
+
+                <p>
+                    Результат носит информационный характер и помогает определить возможные направления
+                    дальнейшей самостоятельной работы.
+                </p>
+            </div>
+        </div>
+
+        <div class="final-result-layout">
+
+            <section class="final-result-main-card">
+                <div class="final-result-main-card__icon">
+                    ✓
+                </div>
+
+                <div class="final-result-main-card__content">
+                    <span>Краткий итог</span>
+
+                    <h2>
+                        Диагностика завершена
+                    </h2>
+
+                    <p>
+                        {{ short_summary }}
+                    </p>
+                </div>
+            </section>
+
+            <section class="final-result-details-card">
+                <div class="final-result-section-heading">
+                    <div class="final-result-section-heading__icon">
+                        📝
+                    </div>
+
+                    <div>
+                        <span>Расшифровка</span>
+
+                        <h2>
+                            Более подробное описание результата
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="final-result-detail-list">
+                    {% for paragraph in detail_paragraphs %}
+                        <div class="final-result-detail-item">
+                            <div class="final-result-detail-item__marker">
+                                {{ forloop.counter }}
+                            </div>
+
+                            <p>
+                                {{ paragraph }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="final-result-note-card">
+                <div class="final-result-note-card__icon">
+                    !
+                </div>
+
+                <div>
+                    <span>Важное уточнение</span>
+
+                    <p>
+                        {{ final_note }}
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="diagnostic-actions final-result-actions">
+            <a href="{% url 'final_diagnostic' %}" class="diagnostic-submit-btn">
+                Пройти диагностику заново
+            </a>
+
+            <a href="{% url 'dashboard' %}" class="diagnostic-secondary-btn">
+                Вернуться к программе
+            </a>
+
+            <a href="{% url 'progress' %}" class="diagnostic-secondary-btn">
+                Посмотреть прогресс
+            </a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

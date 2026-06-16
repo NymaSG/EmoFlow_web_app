@@ -1,0 +1,153 @@
+{% extends 'emotional_app/base.html' %}
+
+{% block title %}Прогресс — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="progress-page">
+    <div class="progress-bg"></div>
+
+    <div class="progress-container">
+
+        <div class="progress-hero">
+            <div class="progress-hero__content">
+                <div class="progress-badge">Личный прогресс</div>
+
+                <h1 class="progress-title">
+                    Ваш путь в EmoFlow
+                </h1>
+
+                <p class="progress-text">
+                    Здесь отображается ваш прогресс прохождения программы,
+                    количество завершенных дней, набранные очки и последние ответы.
+                </p>
+            </div>
+
+            <div class="circle-progress-card">
+                <div class="circle-progress"
+                     style="background: conic-gradient(#4f684b {{ progress_percent }}%, rgba(94, 113, 88, 0.14) 0);">
+
+                    <div class="circle-progress__inner">
+                        <span>{{ progress_percent }}%</span>
+                        <small>пройдено</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-stats-grid">
+            <div class="progress-stat-card">
+                <div class="progress-stat-card__icon">✓</div>
+                <div>
+                    <div class="progress-stat-card__value">
+                        {{ completed_count }} из {{ total_days }}
+                    </div>
+                    <div class="progress-stat-card__label">
+                        завершено дней
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-stat-card">
+                <div class="progress-stat-card__icon">★</div>
+                <div>
+                    <div class="progress-stat-card__value">
+                        {{ total_points }}
+                    </div>
+                    <div class="progress-stat-card__label">
+                        набрано очков
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-stat-card">
+                <div class="progress-stat-card__icon">↗</div>
+                <div>
+                    <div class="progress-stat-card__value">
+                        {{ points_per_day }}
+                    </div>
+                    <div class="progress-stat-card__label">
+                        очков за день
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-card">
+            <div class="progress-card__header">
+                <div>
+                    <h2>Карта прохождения</h2>
+                    <p>
+                        Зеленые ячейки показывают завершенные дни программы.
+                    </p>
+                </div>
+            </div>
+
+            <div class="progress-days-map">
+                {% for day in chart_days %}
+                    <div class="
+                        progress-day-cell
+                        {% if day.completed %}progress-day-cell--done{% endif %}
+                    ">
+                        <span>{{ day.number }}</span>
+
+                        {% if day.completed %}
+                            <small>★</small>
+                        {% else %}
+                            <small>○</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="progress-card">
+            <div class="progress-card__header">
+                <div>
+                    <h2>Последние ответы</h2>
+                    <p>
+                        Здесь сохраняются ваши записи из выполненных упражнений.
+                    </p>
+                </div>
+            </div>
+
+            {% if recent_answers %}
+                <div class="answers-list">
+                    {% for answer in recent_answers %}
+                        <article class="answer-card">
+                            <div class="answer-card__meta">
+                                День {{ answer.question.exercise.day.number }} — {{ answer.question.exercise.title }}
+                            </div>
+
+                            <h3>
+                                {{ answer.question.label }}
+                            </h3>
+
+                            <p>
+                                {{ answer.value }}
+                            </p>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-progress">
+                    <div class="empty-progress__icon">✦</div>
+
+                    <h3>Ответов пока нет</h3>
+
+                    <p>
+                        Начните первый день программы, чтобы здесь появились ваши записи
+                        и личные наблюдения.
+                    </p>
+
+                    <a href="{% url 'dashboard' %}" class="empty-progress__button">
+                        Перейти к программе
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

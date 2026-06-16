@@ -1,0 +1,138 @@
+{% extends 'emotional_app/base.html' %}
+{% load app_extras %}
+
+{% block title %}Диагностика — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="diagnostic-page">
+    <div class="diagnostic-bg"></div>
+
+    <div class="diagnostic-container">
+
+        <div class="diagnostic-top-panel">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← К программе
+            </a>
+
+            <div class="diagnostic-chip">
+                День {{ day_number }}
+            </div>
+        </div>
+
+        <div class="diagnostic-hero">
+            <div class="diagnostic-hero__content">
+                <div class="diagnostic-badge">
+                    Самодиагностика
+                </div>
+
+                <h1>
+                    {% if day_number == 14 %}
+                        Промежуточная диагностика
+                    {% else %}
+                        Итоговая диагностика
+                    {% endif %}
+                </h1>
+
+                <p>
+                    Ответь быстро, как чувствуешь прямо сейчас.  
+                    Шкала: <strong>1</strong> — совсем не про меня, <strong>5</strong> — точно про меня.
+                </p>
+            </div>
+
+            <div class="diagnostic-side-card">
+                <div class="diagnostic-side-card__icon">🧭</div>
+
+                <h3>Зачем это нужно?</h3>
+
+                <p>
+                    Диагностика помогает увидеть изменения в понимании эмоций,
+                    принятии, переоценке и навыках саморегуляции.
+                </p>
+            </div>
+        </div>
+
+        {% if result %}
+            <div class="diagnostic-result-card">
+                <div class="diagnostic-result-card__circle">
+                    <span>{{ result.percent }}%</span>
+                    <small>результат</small>
+                </div>
+
+                <div>
+                    <h2>Результат диагностики</h2>
+
+                    <p>
+                        Ты набрал(а) <strong>{{ result.total }}</strong> из
+                        <strong>{{ result.max }}</strong> возможных баллов.
+                    </p>
+
+                    <div class="diagnostic-result-line">
+                        <div class="diagnostic-result-line__fill" style="width: {{ result.percent }}%;"></div>
+                    </div>
+
+                    <p class="diagnostic-result-note">
+                        Это не оценка личности, а мягкий ориентир: он показывает,
+                        какие навыки уже укрепились и над чем можно продолжить работу.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <form method="post" class="diagnostic-form">
+            {% csrf_token %}
+
+            <div class="diagnostic-questions">
+                {% for question in questions %}
+                    <article class="diagnostic-question-card">
+                        <div class="diagnostic-question-card__number">
+                            {{ forloop.counter }}
+                        </div>
+
+                        <div class="diagnostic-question-card__content">
+                            <h3>
+                                {{ question.text|linebreaksbr }}
+                            </h3>
+
+                            <div class="diagnostic-scale">
+                                {% for score in "12345" %}
+                                    <label class="diagnostic-scale-option">
+                                        <input
+                                            type="radio"
+                                            name="q_{{ question.id }}"
+                                            value="{{ score }}"
+                                            {% if previous|get_item:question.id|stringformat:"s" == score %}checked{% endif %}
+                                            required
+                                        >
+
+                                        <span class="diagnostic-scale-option__circle">
+                                            {{ score }}
+                                        </span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                            <div class="diagnostic-scale-labels">
+                                <span>Не про меня</span>
+                                <span>Точно про меня</span>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div class="diagnostic-actions">
+                <button type="submit" class="diagnostic-submit-btn">
+                    Показать результат
+                </button>
+
+                <a href="{% url 'dashboard' %}" class="diagnostic-secondary-btn">
+                    К программе
+                </a>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+{% endblock %}

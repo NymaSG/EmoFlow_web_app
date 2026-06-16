@@ -1,0 +1,157 @@
+{% extends 'emotional_app/base.html' %}
+{% load app_extras %}
+
+{% block title %}Программа — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-page">
+    <div class="dashboard-bg"></div>
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-hero">
+            <div>
+                <div class="dashboard-badge">21-дневная программа</div>
+
+                <h1 class="dashboard-title">
+                    Программа упражнений
+                </h1>
+
+                <p class="dashboard-text">
+                    Комплекс упражнений рассчитан на 21 день. Для более плавного и устойчивого результата
+                    рекомендуется выполнять задания каждый день, последовательно переходя от одного дня к другому.
+                </p>
+            </div>
+
+            <div class="score-card">
+                <div class="score-card__label">Ваш результат</div>
+
+                <div class="score-card__points">
+                    {{ total_points }}
+                    <span>очков</span>
+                </div>
+
+                <div class="score-card__stars">
+                    {% if completed_count > 0 %}
+                        ★★★
+                    {% else %}
+                        ☆☆☆
+                    {% endif %}
+                </div>
+
+                <div class="score-card__small">
+                    Завершено {{ completed_count }} из {{ total_days }} дней
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-panel">
+            <div class="progress-panel__top">
+                <div>
+                    <h2>Карта прогресса</h2>
+                    <p>
+                        Каждый заполненный столбик — завершенный день программы.
+                    </p>
+                </div>
+
+                <div class="progress-percent">
+                    {{ progress_percent }}%
+                </div>
+            </div>
+
+            <div class="progress-line">
+                <div class="progress-line__fill" style="width: {{ progress_percent }}%;"></div>
+            </div>
+
+            <div class="days-chart">
+                {% for item in chart_days %}
+                    <div class="chart-item">
+                        <div class="chart-bar-wrap">
+                            <div class="
+                                chart-bar
+                                {% if item.completed %}chart-bar--completed{% endif %}
+                                {% if item.available %}chart-bar--available{% endif %}
+                            "
+                            style="height: {{ item.height }}%;">
+                            </div>
+                        </div>
+
+                        <div class="chart-day-number">
+                            {{ item.number }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="program-blocks">
+            {% for block in blocks %}
+                <section class="program-block-card">
+                    <div class="program-block-card__header">
+                        <div>
+                            <h2>{{ block.title }}</h2>
+                            <p>{{ block.description }}</p>
+                        </div>
+                    </div>
+
+                    <div class="days-grid">
+                        {% for day in block.days.all %}
+                            <article class="
+                                day-card-new
+                                {% if completed_days|contains:day.number %}day-card-new--completed{% endif %}
+                                {% if day.number == available_day %}day-card-new--available{% endif %}
+                            ">
+                                <div class="day-card-new__top">
+                                    <span class="day-number">День {{ day.number }}</span>
+
+                                    {% if completed_days|contains:day.number %}
+                                        <span class="day-status day-status--done">Завершен</span>
+                                    {% elif day.number == available_day %}
+                                        <span class="day-status day-status--open">Доступен</span>
+                                    {% else %}
+                                        <span class="day-status day-status--locked">Закрыт</span>
+                                    {% endif %}
+                                </div>
+
+                                <h3>{{ day.title }}</h3>
+
+                                <div class="day-reward">
+                                    {% if completed_days|contains:day.number %}
+                                        <span class="reward-stars">★★★</span>
+                                        <span>+{{ points_per_day }} очков</span>
+                                    {% elif day.number == available_day %}
+                                        <span class="reward-stars reward-stars--muted">☆☆☆</span>
+                                        <span>Можно получить {{ points_per_day }} очков</span>
+                                    {% else %}
+                                        <span class="reward-stars reward-stars--muted">☆☆☆</span>
+                                        <span>Откроется позже</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="day-card-new__action">
+                                    {% if completed_days|contains:day.number or day.number == available_day %}
+                                        <a href="{% url 'day_detail' day.number %}" class="day-button">
+                                            {% if completed_days|contains:day.number %}
+                                                Открыть снова
+                                            {% else %}
+                                                Начать день
+                                            {% endif %}
+                                        </a>
+                                    {% else %}
+                                        <button class="day-button day-button--disabled" disabled>
+                                            Закрыто
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

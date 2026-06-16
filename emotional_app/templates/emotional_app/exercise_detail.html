@@ -1,0 +1,647 @@
+{% extends 'emotional_app/base.html' %}
+{% load app_extras static %}
+
+{% block title %}{{ exercise.title }} — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="exercise-page">
+    <div class="exercise-bg"></div>
+
+    <div class="exercise-container">
+
+        <div class="exercise-top-panel">
+            <a href="{% url 'day_detail' exercise.day.number %}" class="back-link">
+                ← К дню {{ exercise.day.number }}
+            </a>
+
+            <div class="exercise-chip">
+                Упражнение {{ exercise.order }}
+            </div>
+        </div>
+
+        {% if exercise.exercise_type == 'timer' %}
+
+            <div class="breathing-page">
+
+                <div class="breathing-hero-card">
+                    <div class="breathing-icons">
+                        <span>☁️</span>
+                        <span>🌬️</span>
+                        <span>🧘</span>
+                    </div>
+
+                    <div class="breathing-badge">
+                        Метафора и дыхание
+                    </div>
+
+                    <h1>
+                        {{ exercise.title }}
+                    </h1>
+
+                    <div class="breathing-metaphor-text">
+                        {{ exercise.description|linebreaksbr }}
+                    </div>
+
+        {% if exercise.id == 324 %}
+
+            <div class="rain-audio-card">
+                <div class="rain-audio-card__top">
+                    <div>
+                        <div class="rain-audio-card__badge">
+                            Аудиофон
+                        </div>
+
+                        <h2>Звук для медитации</h2>
+
+                        <p>
+                            Мягкий звук поможет сосредоточиться на дыхании
+                            и спокойном наблюдении за эмоцией.
+                        </p>
+                    </div>
+
+                    <div class="rain-audio-card__icon">
+                        🎧
+                    </div>
+                </div>
+
+                <div class="rain-audio-track">
+
+                    <div class="rain-audio-track__text">
+                        <strong>Тихий звук</strong>
+                        <span>спокойный ровный фон для медитации</span>
+                    </div>
+
+                    <div class="rain-audio-track__bars">
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                    </div>
+                </div>
+
+                <div class="rain-audio-controls">
+                    <button type="button" class="rain-audio-button" id="meditation-audio-toggle">
+                        <span class="rain-audio-button__icon">▶</span>
+                        <span class="rain-audio-button__text">Включить звук</span>
+                    </button>
+
+                    <div class="rain-audio-volume">
+                        <span>🔈</span>
+
+                        <input
+                            type="range"
+                            id="meditation-volume"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value="0.45"
+                        >
+
+                        <span>🔊</span>
+                    </div>
+                </div>
+
+                <audio id="meditation-audio" loop>
+                    <source src="{% static 'emotional_app/audio/calm-rain.mp3' %}" type="audio/mpeg">
+                </audio>
+            </div>
+        
+        {% endif %}
+
+                    <div class="breathing-practice-box">
+                        <div class="breathing-square">
+                            <div class="breathing-dot"></div>
+                        </div>
+
+                        <div class="breathing-instruction">
+                            <h2>Дыхание 4-4-4-4</h2>
+
+                            <div class="breathing-steps">
+                                <div>
+                                    <strong>1</strong>
+                                    <span>Вдох — 4</span>
+                                </div>
+
+                                <div>
+                                    <strong>2</strong>
+                                    <span>Пауза — 4</span>
+                                </div>
+
+                                <div>
+                                    <strong>3</strong>
+                                    <span>Выдох — 4</span>
+                                </div>
+
+                                <div>
+                                    <strong>4</strong>
+                                    <span>Пауза — 4</span>
+                                </div>
+                            </div>
+
+                            <p>
+                                Следи за точкой на квадрате: она мягко движется по сторонам,
+                                помогая удерживать спокойный ритм дыхания.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="breathing-answer-card">
+                    <div class="exercise-form-card__header">
+                        <h2>Наблюдение после практики</h2>
+
+                        <p>
+                            Запиши, что изменилось после дыхания. Даже небольшое изменение —
+                            это уже важное наблюдение.
+                        </p>
+                    </div>
+
+                    <form method="post" class="exercise-form">
+                        {% csrf_token %}
+
+                        {% for q in questions %}
+                            <div class="exercise-question">
+                                <label class="exercise-question__label" for="q_{{ q.id }}">
+                                    {{ q.text }}
+                                    {% if q.required %}
+                                        <span>*</span>
+                                    {% endif %}
+                                </label>
+
+                                {% if q.question_type == 'textarea' %}
+                                    <textarea
+                                        id="q_{{ q.id }}"
+                                        name="q_{{ q.id }}"
+                                        rows="5"
+                                        {% if q.required %}required{% endif %}
+                                    >{{ existing_answers|get_item:q.id }}</textarea>
+                                {% else %}
+                                    <input
+                                        id="q_{{ q.id }}"
+                                        type="text"
+                                        name="q_{{ q.id }}"
+                                        value="{{ existing_answers|get_item:q.id }}"
+                                        {% if q.required %}required{% endif %}
+                                    >
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="exercise-actions">
+                            <button type="submit" class="exercise-submit-btn">
+                                Сохранить и продолжить
+                            </button>
+
+                            <a href="{% url 'day_detail' exercise.day.number %}" class="exercise-cancel-btn">
+                                Вернуться к дню
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+        {% elif questions %}
+
+            <div class="exercise-layout">
+
+                <aside class="exercise-info-card">
+                    <div class="exercise-info-card__badge">
+                        День {{ exercise.day.number }}
+                    </div>
+
+                    <h1>
+                        {{ exercise.title }}
+                    </h1>
+
+                    <p class="exercise-day-title">
+                        {{ exercise.day.title }}
+                    </p>
+
+                    {% if exercise.description %}
+                        <div class="exercise-description">
+                            {{ exercise.description|linebreaksbr }}
+                        </div>
+                    {% else %}
+                        <div class="exercise-description">
+                            Прочитайте инструкцию и заполните поля. Ответы сохраняются,
+                            чтобы вы могли вернуться к ним позже.
+                        </div>
+                    {% endif %}
+
+                    <div class="exercise-soft-note">
+                        <div class="exercise-soft-note__icon">✦</div>
+
+                        <p>
+                            Здесь нет правильных или неправильных ответов.
+                            Важно отвечать честно и спокойно.
+                        </p>
+                    </div>
+                </aside>
+
+                <main class="exercise-form-card">
+                    <div class="exercise-form-card__header">
+                        <h2>Ваши ответы</h2>
+
+                        <p>
+                            Заполните поля упражнения, чтобы перейти дальше.
+                        </p>
+                    </div>
+
+                    <form method="post" class="exercise-form">
+                        {% csrf_token %}
+
+                        {% for q in questions %}
+                            <div class="exercise-question">
+
+                                <label class="exercise-question__label" for="q_{{ q.id }}">
+                                    {{ q.text }}
+                                    {% if q.required %}
+                                        <span>*</span>
+                                    {% endif %}
+                                </label>
+
+                                {% if q.help_text %}
+                                    <p class="exercise-question__help">
+                                        {{ q.help_text }}
+                                    </p>
+                                {% endif %}
+
+                                {% if q.question_type == 'drawing' %}
+
+                                    <div class="drawing-field">
+                                        <div class="drawing-toolbar">
+                                            <div>
+                                                <h3>Нарисуй карту эмоций</h3>
+                                                <p>
+                                                    Можно обозначить эмоции цветами, линиями, кругами,
+                                                    волнами или любыми символами.
+                                                </p>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                class="drawing-clear-btn"
+                                                data-canvas="drawing-canvas-{{ q.id }}"
+                                            >
+                                                Очистить
+                                            </button>
+                                        </div>
+
+                                        <canvas
+                                            id="drawing-canvas-{{ q.id }}"
+                                            class="drawing-canvas"
+                                            width="900"
+                                            height="420"
+                                            data-input="drawing-input-{{ q.id }}"
+                                            data-existing="{{ existing_answers|get_item:q.id }}"
+                                        ></canvas>
+
+                                        <input
+                                            type="hidden"
+                                            id="drawing-input-{{ q.id }}"
+                                            name="q_{{ q.id }}"
+                                            value="{{ existing_answers|get_item:q.id }}"
+                                        >
+
+                                        <div class="drawing-hint">
+                                            ✏️ Рисунок сохранится после нажатия кнопки «Сохранить и продолжить».
+                                        </div>
+                                    </div>
+
+                                {% elif q.question_type == 'textarea' %}
+                                    <textarea
+                                        id="q_{{ q.id }}"
+                                        name="q_{{ q.id }}"
+                                        rows="5"
+                                        {% if q.required %}required{% endif %}
+                                    >{{ existing_answers|get_item:q.id }}</textarea>
+
+                                {% elif q.question_type == 'select' %}
+                                        <select
+                                            id="q_{{ q.id }}"
+                                            name="q_{{ q.id }}"
+                                            class="select-with-other"
+                                            data-other-input="other-input-{{ q.id }}"
+                                            {% if q.required %}required{% endif %}
+                                        >
+                                            <option value="">Выберите вариант</option>
+
+                                            {% for option in q.get_options %}
+                                                <option value="{{ option }}"
+                                                    {% if existing_answers|get_item:q.id == option %}selected{% endif %}
+                                                >
+                                                    {{ option }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <div class="other-input-wrap" id="other-input-{{ q.id }}">
+                                            <label class="other-input-label" for="q_other_{{ q.id }}">
+                                                Поясните свой вариант
+                                            </label>
+
+                                            <input
+                                                id="q_other_{{ q.id }}"
+                                                type="text"
+                                                name="q_other_{{ q.id }}"
+                                                value=""
+                                                placeholder="Например: напишите свою стратегию"
+                                            >
+                                        </div>
+
+                                {% elif q.question_type == 'multiselect' %}
+                                    <div class="checkbox-options">
+                                        {% for option in q.get_options %}
+                                            <label class="checkbox-option">
+                                                <input
+                                                    type="checkbox"
+                                                    name="q_{{ q.id }}"
+                                                    value="{{ option }}"
+                                                    {% if option in existing_answers|get_item:q.id %}checked{% endif %}
+                                                >
+
+                                                <span class="checkbox-option__box"></span>
+
+                                                <span class="checkbox-option__text">
+                                                    {{ option }}
+                                                </span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% if q.required %}
+                                        <p class="exercise-question__help">
+                                            Выберите один или несколько вариантов.
+                                        </p>
+                                    {% endif %}
+
+                                {% elif q.question_type == 'scale' %}
+                                    <div class="scale-field">
+                                        <div class="scale-field__top">
+                                            <span>{{ q.scale_min }}</span>
+
+                                            <strong id="scale-value-{{ q.id }}">
+                                                {{ existing_answers|get_item:q.id|default:q.scale_default }}
+                                            </strong>
+
+                                            <span>{{ q.scale_max }}</span>
+                                        </div>
+
+                                        <input
+                                            id="q_{{ q.id }}"
+                                            type="range"
+                                            name="q_{{ q.id }}"
+                                            min="{{ q.scale_min }}"
+                                            max="{{ q.scale_max }}"
+                                            value="{{ existing_answers|get_item:q.id|default:q.scale_default }}"
+                                            oninput="document.getElementById('scale-value-{{ q.id }}').innerText = this.value"
+                                            {% if q.required %}required{% endif %}
+                                        >
+                                    </div>
+
+                                {% else %}
+                                    <input
+                                        id="q_{{ q.id }}"
+                                        type="text"
+                                        name="q_{{ q.id }}"
+                                        value="{{ existing_answers|get_item:q.id }}"
+                                        {% if q.required %}required{% endif %}
+                                    >
+                                {% endif %}
+
+                            </div>
+                        {% endfor %}
+
+                        <div class="exercise-actions">
+                            <button type="submit" class="exercise-submit-btn">
+                                Сохранить и продолжить
+                            </button>
+
+                            <a href="{% url 'day_detail' exercise.day.number %}" class="exercise-cancel-btn">
+                                Вернуться к дню
+                            </a>
+                        </div>
+                    </form>
+                </main>
+
+            </div>
+
+        {% else %}
+
+            <div class="metaphor-screen">
+                <div class="metaphor-card">
+                    <div class="metaphor-icon-wrap">
+                        <div class="metaphor-icon">💡</div>
+                    </div>
+
+                    <h1>
+                        {{ exercise.title }}
+                    </h1>
+
+                    <div class="metaphor-text">
+                        {{ exercise.description|linebreaksbr }}
+                    </div>
+
+                    <form method="post" class="metaphor-actions">
+                        {% csrf_token %}
+
+                        <button type="submit" class="exercise-submit-btn">
+                            {{ exercise.button_text|default:"Понятно" }}
+                        </button>
+
+                        <a href="{% url 'day_detail' exercise.day.number %}" class="exercise-cancel-btn">
+                            Вернуться к дню
+                        </a>
+                    </form>
+                </div>
+
+                <div class="metaphor-decor metaphor-decor--one">🌿</div>
+                <div class="metaphor-decor metaphor-decor--two">✨</div>
+                <div class="metaphor-decor metaphor-decor--three">☁️</div>
+            </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const canvases = document.querySelectorAll(".drawing-canvas");
+
+    canvases.forEach(function (canvas) {
+        const ctx = canvas.getContext("2d");
+        const inputId = canvas.dataset.input;
+        const hiddenInput = document.getElementById(inputId);
+        const existingImage = canvas.dataset.existing;
+
+        let drawing = false;
+
+        function prepareCanvas() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.strokeStyle = "#4f684b";
+        }
+
+        function getPosition(event) {
+            const rect = canvas.getBoundingClientRect();
+
+            if (event.touches && event.touches.length > 0) {
+                return {
+                    x: (event.touches[0].clientX - rect.left) * (canvas.width / rect.width),
+                    y: (event.touches[0].clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+            return {
+                x: (event.clientX - rect.left) * (canvas.width / rect.width),
+                y: (event.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function saveCanvas() {
+            hiddenInput.value = canvas.toDataURL("image/png");
+        }
+
+        function startDrawing(event) {
+            drawing = true;
+            const pos = getPosition(event);
+
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+
+            event.preventDefault();
+        }
+
+        function draw(event) {
+            if (!drawing) return;
+
+            const pos = getPosition(event);
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            saveCanvas();
+            event.preventDefault();
+        }
+
+        function stopDrawing() {
+            if (!drawing) return;
+
+            drawing = false;
+            saveCanvas();
+        }
+
+        prepareCanvas();
+
+        if (existingImage && existingImage.startsWith("data:image")) {
+            const img = new Image();
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.src = existingImage;
+        }
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseleave", stopDrawing);
+
+        canvas.addEventListener("touchstart", startDrawing, { passive: false });
+        canvas.addEventListener("touchmove", draw, { passive: false });
+        canvas.addEventListener("touchend", stopDrawing);
+
+        const clearButton = document.querySelector('[data-canvas="' + canvas.id + '"]');
+
+        if (clearButton) {
+            clearButton.addEventListener("click", function () {
+                prepareCanvas();
+                saveCanvas();
+            });
+        }
+
+        saveCanvas();
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const selectFields = document.querySelectorAll(".select-with-other");
+
+    selectFields.forEach(function (select) {
+        const otherBlockId = select.dataset.otherInput;
+        const otherBlock = document.getElementById(otherBlockId);
+        const otherInput = otherBlock ? otherBlock.querySelector("input") : null;
+
+        function toggleOtherInput() {
+            if (!otherBlock || !otherInput) return;
+
+            if (select.value === "Другое") {
+                otherBlock.classList.add("other-input-wrap--visible");
+                otherInput.disabled = false;
+            } else {
+                otherBlock.classList.remove("other-input-wrap--visible");
+                otherInput.disabled = true;
+                otherInput.value = "";
+            }
+        }
+
+        toggleOtherInput();
+
+        select.addEventListener("change", toggleOtherInput);
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const audio = document.getElementById("meditation-audio");
+    const toggleButton = document.getElementById("meditation-audio-toggle");
+    const volumeControl = document.getElementById("meditation-volume");
+
+    if (!audio || !toggleButton || !volumeControl) {
+        return;
+    }
+
+    const buttonIcon = toggleButton.querySelector(".rain-audio-button__icon");
+    const buttonText = toggleButton.querySelector(".rain-audio-button__text");
+
+    let isPlaying = false;
+
+    audio.volume = Number(volumeControl.value);
+
+    toggleButton.addEventListener("click", function () {
+        if (isPlaying) {
+            audio.pause();
+            isPlaying = false;
+
+            buttonIcon.textContent = "▶";
+            buttonText.textContent = "Включить звук";
+            toggleButton.classList.remove("rain-audio-button--active");
+        } else {
+            audio.play().then(function () {
+                isPlaying = true;
+
+                buttonIcon.textContent = "⏸";
+                buttonText.textContent = "Выключить звук";
+                toggleButton.classList.add("rain-audio-button--active");
+            }).catch(function () {
+                alert("Браузер не смог запустить звук. Нажмите кнопку еще раз.");
+            });
+        }
+    });
+
+    volumeControl.addEventListener("input", function () {
+        audio.volume = Number(volumeControl.value);
+    });
+});
+</script>
+
+{% endblock %}

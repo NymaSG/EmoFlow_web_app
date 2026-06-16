@@ -1,0 +1,177 @@
+{% extends 'emotional_app/base.html' %}
+{% load app_extras %}
+
+{% block title %}Итоговая диагностика — EmoFlow{% endblock %}
+
+{% block content %}
+
+<section class="diagnostic-page">
+    <div class="diagnostic-bg"></div>
+
+    <div class="diagnostic-container">
+
+        <div class="diagnostic-top-panel">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                ← К программе
+            </a>
+
+            <div class="diagnostic-chip">
+                Итоговая диагностика
+            </div>
+        </div>
+
+        <div class="diagnostic-hero">
+            <div class="diagnostic-hero__content">
+                <div class="diagnostic-badge">
+                    Завершение программы
+                </div>
+
+                <h1>
+                    Итоговая диагностика
+                </h1>
+
+                <p>
+                    Ответьте на утверждения спокойно и честно. Диагностика помогает увидеть,
+                    как сформированы навыки осознания, принятия и продуктивной переработки
+                    негативных эмоциональных состояний.
+                </p>
+            </div>
+
+            <div class="diagnostic-side-card">
+                <div class="diagnostic-side-card__icon">🧭</div>
+
+                <h3>Важно</h3>
+
+                <p>
+                    Результат не является клиническим заключением. Он показывает зоны ресурса
+                    и направления дальнейшего развития навыков эмоциональной саморегуляции.
+                </p>
+            </div>
+        </div>
+
+        <form method="post" class="diagnostic-form">
+            {% csrf_token %}
+
+            <div class="diagnostic-questions">
+
+                {% for method_code, method in grouped_questions.items %}
+
+                    <div class="final-diagnostic-section-title">
+                        <div class="final-diagnostic-section-title__icon">
+                            {% if method_code == 'wellbeing' %}
+                                🌿
+                            {% elif method_code == 'erq' %}
+                                🔄
+                            {% elif method_code == 'ecv' %}
+                                🎛️
+                            {% elif method_code == 'srspm' %}
+                                🧭
+                            {% elif method_code == 'fivepfq' %}
+                                🧩
+                            {% else %}
+                                ✦
+                            {% endif %}
+                        </div>
+
+                        <div class="final-diagnostic-section-title__content">
+                            <span>Раздел диагностики</span>
+
+                            <h2>
+                                {{ method.method_title }}
+                            </h2>
+
+                            {% if method.method_author %}
+                                <p class="final-diagnostic-section-title__author">
+                                    Автор(ы): {{ method.method_author }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% for question in method.questions %}
+                        <article class="diagnostic-question-card">
+                            <div class="diagnostic-question-card__number">
+                                {{ forloop.counter }}
+                            </div>
+
+                            <div class="diagnostic-question-card__content">
+
+                                {% if question.scale_min == -2 and question.scale_max == 2 %}
+                                    <h3 class="bipolar-question-title">
+                                        Выберите, какое утверждение больше соответствует вам
+                                    </h3>
+
+                                    <div class="bipolar-question-text">
+                                        <div class="bipolar-question-text__side">
+                                            {{ question.left_text }}
+                                        </div>
+
+                                        <div class="bipolar-question-text__divider">
+                                            или
+                                        </div>
+
+                                        <div class="bipolar-question-text__side">
+                                            {{ question.right_text }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <h3>
+                                        {{ question.text }}
+                                    </h3>
+                                {% endif %}
+
+                                <div class="diagnostic-scale">
+                                    {% for score in question.get_scale_values %}
+                                        <label class="diagnostic-scale-option">
+                                            <input
+                                                type="radio"
+                                                name="q_{{ question.id }}"
+                                                value="{{ score }}"
+                                                {% if previous_answers|get_item:question.id|stringformat:"s" == score|stringformat:"s" %}checked{% endif %}
+                                                required
+                                            >
+
+                                            <span class="diagnostic-scale-option__circle">
+                                                {{ score }}
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="diagnostic-scale-labels">
+                                    {% if question.scale_min == -2 %}
+                                        <span>Левое утверждение</span>
+                                        <span>Правое утверждение</span>
+                                    {% elif question.scale_min == 0 %}
+                                        <span>0 — не согласен</span>
+                                        <span>{{ question.scale_max }} — полностью согласен</span>
+                                    {% elif question.scale_max == 7 %}
+                                        <span>1 — не согласен</span>
+                                        <span>7 — полностью согласен</span>
+                                    {% else %}
+                                        <span>{{ question.scale_min }} — минимум</span>
+                                        <span>{{ question.scale_max }} — максимум</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+
+                {% endfor %}
+            </div>
+
+            <div class="diagnostic-actions">
+                <button type="submit" class="diagnostic-submit-btn">
+                    Завершить диагностику
+                </button>
+
+                <a href="{% url 'dashboard' %}" class="diagnostic-secondary-btn">
+                    К программе
+                </a>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+{% endblock %}
